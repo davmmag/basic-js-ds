@@ -55,14 +55,14 @@ class BinarySearchTree {
         return false;
       }
 
-    if(node.data === data) {
-                return true;
-    }
+      if(node.data === data) {
+        return true;
+      }
 
-    return data < node.data ?
-      searchWithin(node.left, data) :
-      searchWithin(node.right, data);
-    }
+      return data < node.data ?
+        searchWithin(node.left, data) :
+        searchWithin(node.right, data);
+      }
   }
 
   find(data) {
@@ -84,42 +84,60 @@ class BinarySearchTree {
   }
 
   remove(data) {
-    this.main = removeNode(this.main, data);
+    if (this.main === null) {
+      return null;
+    }
 
-        function removeNode(node, data) {
-          console.log(data)
-            if(data < node.data) {
-                node.left = removeNode(node.left, data);
-                return node;
-            } else if(node.data < data) {
-                node.right = removeNode(node.right, data);
-                return node;
-            } else {
-                if(!node.left && !node.right) {
-                    return null;
-                }
-            }
+    this.main = this._deleteNode(this.main, data);
+  }
 
-            if(!node.left)  {
-                node = node.right;
-                return node;
-            }       
+  _deleteNode(currentNode, itemValue) {
+    if (currentNode.data === itemValue) {
+      if (currentNode.left === null && currentNode.right === null) {
+        return null;
+      }
 
-            if(!node.right) {
-                node = node.right;
-                return node;
-            }
+      if (currentNode.left === null) {
+        return currentNode.right;
+      }
 
-            let minFromRight = node.right;
-            while(minFromRight.left) {
-                minFromRight = minFromRight.left;
-            }
+      if (currentNode.right === null) {
+        return currentNode.left;
+      }
 
-            node.data = minFromRight.data;
+      const minNodeInRightSubtree = this._findMinElement(currentNode.right);
+      currentNode.data = minNodeInRightSubtree.data;
 
-            node.right = removeNode(node.right, minFromRight.data);
-            return node;
-        }
+      currentNode.right = this._deleteNode(
+        currentNode.right,
+        minNodeInRightSubtree.data
+      );
+      return currentNode;
+    }
+
+    if (itemValue < currentNode.data) {
+      if (currentNode.left === null) {
+        return currentNode;
+      }
+
+      currentNode.left = this._deleteNode(currentNode.left, itemValue);
+      return currentNode;
+    }
+
+    if (itemValue > currentNode.data) {
+      if (currentNode.right === null) {
+        return currentNode;
+      }
+
+      currentNode.right = this._deleteNode(currentNode.right, itemValue);
+      return currentNode;
+    }
+  }
+
+  _findMinElement(node) {
+    if (node.left === null) return node;
+
+    return this._findMinElement(node.left);
   }
 
   min() {
